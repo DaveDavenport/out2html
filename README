@@ -1,0 +1,8 @@
+to build:
+make
+
+to install:
+make install
+
+to install  to path:
+make install PREFIX=/usr/local/
