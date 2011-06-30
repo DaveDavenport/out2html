@@ -11,7 +11,7 @@ DIST=		Makefile\
 		README
 
 PREFIX?=	~/.local/
-PKG_CONFIG= 	glib-2.0 gobject-2.0 
+PKG_CONFIG= 	glib-2.0 gobject-2.0
 
 CFLAGS=		-Wall -Werror -O3
 LIBS=
@@ -48,7 +48,7 @@ all: $(PROGRAM)
 
 $(PROGRAM): $(SOURCE) | $(DIST)
 	$(call print,"$(BOLD)Compile:$(RESET)\\t\\t$^ into $(PROGRAM)")
-	$(QUIET)$(CC) $(LIBS) $(CFLAGS) -o $@ $^ 
+	$(QUIET)$(CC) $(LIBS) $(CFLAGS) -o $@ $^
 
 clean:
 	$(call print,"$(BOLD)Clean source directory$(RESET)")
@@ -57,11 +57,11 @@ clean:
 #Install
 install: $(PROGRAM)
 	$(call print,"$(BOLD)Installing:$(RESET)\\t\\t$^ to $(PREFIX)/bin/")
-	$(QUIET)install $(PROGRAM) $(PREFIX)"/bin/" 
+	$(QUIET)install $(PROGRAM) $(PREFIX)"/bin/"
 
 
 
-dist: $(DIST_FILE) 
-$(DIST_FILE): $(DIST) $(SOURCE)	
+dist: $(DIST_FILE)
+$(DIST_FILE): $(DIST) $(SOURCE)
 	$(call print,"$(BOLD)Creating dist file$(RESET):\\t$@")
 	$(QUIET)tar cfJ $@ $^
