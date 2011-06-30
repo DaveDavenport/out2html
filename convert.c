@@ -1,4 +1,4 @@
-/* ASCII2HTML 
+/* ASCII2HTML
  * Copyright (C) 2011 Qball Cow <qball@gmpclient.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <glib/gstdio.h>
 
 /* Error throwing */
-#define EXCEPTION(test,a, ...) if((test)){fprintf(stderr,"ERROR: " a, __VA_ARGS__); abort();} 
+#define EXCEPTION(test,a, ...) if((test)){fprintf(stderr,"ERROR: " a, __VA_ARGS__); abort();}
 #define WARNING(a, ...) fprintf(stderr,"WARNING: " a, __VA_ARGS__);
 #define DEBUG(a, ...) fprintf(stderr,"DEBUG: " a, __VA_ARGS__);
 
@@ -82,9 +82,9 @@ void process_color(FILE *out, int *attr, int num_attr)
 	}
 
 	/* If we are going to set color, and there is still one open, close it */
-	if(divs> 0) 
+	if(divs> 0)
 		fputs("</span>", out);
-	else 
+	else
 		divs++;
 	fputs("<span style='", out);
 	for(int j=0; j<num_attr; j++) {
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 	gboolean init = FALSE;
 	/* used to parse attribute */
 	gint attributes[MAX_ATTR];
-	gint num_attr = 0;	
+	gint num_attr = 0;
 	/* Input/output */
 	FILE *input = stdin;
 	FILE  *output = stdout;
@@ -237,7 +237,7 @@ int main (int argc, char **argv)
 	g_io_channel_unref(chan);
 
 	/* close i/o */
-	if(input != stdin) fclose(input);	
+	if(input != stdin) fclose(input);
 	if(output != stdout) fclose(output);
 
 	return EXIT_SUCCESS;
