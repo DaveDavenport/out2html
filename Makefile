@@ -1,21 +1,21 @@
-PROGRAM=ascii2html
-VERSION=0.0.1
-AUTHOR=Qball Cow
-COPYRIGHT=2011-2011
-MAIL=qball@gmpclient.org
-SOURCE=\
-	convert.c
+PROGRAM	=	ascii2html
+VERSION	=	0.0.1
+AUTHOR	=	Qball Cow
+COPYRIGHT=	2011-2011
+MAIL=		qball@gmpclient.org
 
-DIST=\
-	Makefile\
-	COPYING\
-	README
+SOURCE=		convert.c
 
-PREFIX?=~/.local/
-PKG_CONFIG=glib-2.0 gobject-2.0 
+DIST=		Makefile\
+		COPYING\
+		README
 
-CFLAGS=-g -O2 -Wall -Werror -std=c99 -D_XOPEN_SOURCE
+PREFIX?=	~/.local/
+PKG_CONFIG= 	glib-2.0 gobject-2.0 
+
+CFLAGS=		-Wall -Werror -O3
 LIBS=
+QUIET=		@
 
 #DO NOT EDIT BELOW THIS LINE
 BOLD="\\033[1m"
@@ -37,7 +37,7 @@ endif
 
 
 DIST_FILE=$(PROGRAM)-$(VERSION).tar.xz
-
+CFLAGS+= -g -std=c99 -D_XOPEN_SOURCE
 CFLAGS+=$(PC_CFLAGS)
 LIBS+=$(PC_LIBS)
 CFLAGS+=-DVERSION="\"$(VERSION)\"" -DPACKAGE="\"$(PROGRAM)\""
@@ -48,20 +48,20 @@ all: $(PROGRAM)
 
 $(PROGRAM): $(SOURCE) | $(DIST)
 	$(call print,"$(BOLD)Compile:$(RESET)\\t\\t$^ into $(PROGRAM)")
-	@$(CC) $(LIBS) $(CFLAGS) -o $@ $^ 
+	$(QUIET)$(CC) $(LIBS) $(CFLAGS) -o $@ $^ 
 
 clean:
 	$(call print,"$(BOLD)Clean source directory$(RESET)")
-	@-rm -f $(PROGRAM) $(DIST_FILE)
+	$(QUIET)-rm -f $(PROGRAM) $(DIST_FILE)
 
 #Install
 install: $(PROGRAM)
 	$(call print,"$(BOLD)Installing:$(RESET)\\t\\t$^ to $(PREFIX)/bin/")
-	@install $(PROGRAM) $(PREFIX)"/bin/" 
+	$(QUIET)install $(PROGRAM) $(PREFIX)"/bin/" 
 
 
 
 dist: $(DIST_FILE) 
 $(DIST_FILE): $(DIST) $(SOURCE)	
 	$(call print,"$(BOLD)Creating dist file$(RESET):\\t$@")
-	@tar cfJ $@ $^
+	$(QUIET)tar cfJ $@ $^
