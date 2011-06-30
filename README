@@ -1,8 +1,11 @@
-to build:
+== Building:
 make
 
-to install:
+== Installing
 make install
 
-to install  to path:
+=== Install specific path
 make install PREFIX=/usr/local/
+
+== Creating release file
+make dist
