@@ -1,5 +1,8 @@
 PROGRAM=ascii2html
 VERSION=0.0.1
+AUTHOR=Qball Cow
+COPYRIGHT=2011-2011
+MAIL=qball@gmpclient.org
 SOURCE=\
 	convert.c
 
@@ -37,6 +40,9 @@ DIST_FILE=$(PROGRAM)-$(VERSION).tar.xz
 
 CFLAGS+=$(PC_CFLAGS)
 LIBS+=$(PC_LIBS)
+CFLAGS+=-DVERSION="\"$(VERSION)\"" -DPACKAGE="\"$(PROGRAM)\""
+CFLAGS+=-DMAIL="\"$(MAIL)\"" -DAUTHOR="\"$(AUTHOR)\""
+CFLAGS+=-DCOPYRIGHT="\"$(COPYRIGHT)\""
 
 all: $(PROGRAM)
 
