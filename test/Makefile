@@ -13,11 +13,11 @@ $(SCRIPTS_COMP): $(SCRIPTS_OUTPUT) $(SCRIPTS_REF)
 
 $(SCRIPTS_OUTPUT): $(SCRIPTS_REF) $(APP_DEP)
 	$(call print,"Create output file: $(@)")
-	@./$(@:%.out=%.sh) > $@ 
+	@./$(@:%.out=%.sh) > $@ 2>&1 
 
 $(SCRIPTS_REF):
 	$(call print,"Generate reference file: $(@)")
-	@./$(@:%.ref=%.sh) > $@ 
+	@./$(@:%.ref=%.sh) > $@ 2>&1 
 
 clean:
 	@-rm -f $(SCRIPTS_OUTPUT)

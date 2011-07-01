@@ -24,9 +24,9 @@
 #include <glib/gstdio.h>
 
 /* Error throwing */
-#define EXCEPTION(test,a, ...) if((test)){fprintf(stderr,"ERROR: " a, __VA_ARGS__); abort();}
-#define WARNING(a, ...) fprintf(stderr,"WARNING: " a, __VA_ARGS__);
-#define DEBUG(a, ...) fprintf(stderr,"DEBUG: " a, __VA_ARGS__);
+#define EXCEPTION(test,a, ...) if((test)){fflush(NULL);fprintf(stderr,"\nERROR: " a, __VA_ARGS__); exit(1);}
+#define WARNING(a, ...) fprintf(stderr,"\nWARNING: " a, __VA_ARGS__);
+#define DEBUG(a, ...) fprintf(stderr,"\nDEBUG: " a, __VA_ARGS__);
 
 /** MAX_ATTR: Maximum number of attributes in one tag */
 const int MAX_ATTR = 32;
