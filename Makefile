@@ -7,8 +7,8 @@ MAIL=		qball@gmpclient.org
 SOURCE=		convert.c
 
 DIST=		Makefile\
-		COPYING\
-		README
+			COPYING\
+			README
 
 PREFIX?=	~/.local/
 PKG_CONFIG= 	glib-2.0 gobject-2.0
@@ -18,6 +18,7 @@ LIBS=
 QUIET=		@
 
 #DO NOT EDIT BELOW THIS LINE
+MAKEFLAGS	= --no-print-directory
 BOLD="\\033[1m"
 RESET="\\033[0m"
 
@@ -65,3 +66,7 @@ dist: $(DIST_FILE)
 $(DIST_FILE): $(DIST) $(SOURCE)
 	$(call print,"$(BOLD)Creating dist file$(RESET):\\t$@")
 	$(QUIET)tar cfJ $@ $^
+
+.PHONY: test
+test: $(PROGRAM)
+	@$(MAKE) -C test/ 
