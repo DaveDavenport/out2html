@@ -76,7 +76,7 @@ void process_color(FILE *out, int *attr, int num_attr)
 
 	/* On explicit close, close it */
 	if(num_attr == 1 && attr[0] == 0) {
-		if(divs > 0) {
+		while(divs > 0) {
 			fputs("</span>", out);
 			divs--;
 		}
@@ -84,15 +84,16 @@ void process_color(FILE *out, int *attr, int num_attr)
 	}
 
 	/* If we are going to set color, and there is still one open, close it */
-	if(divs> 0)
-		fputs("</span>", out);
-	else
-		divs++;
-	fputs("<span style='", out);
+    divs++;
+    fputs("<span style='", out);
 	for(int j=0; j<num_attr; j++) {
 		if(attr[j] == 1) {
 			fputs("font-weight:bold", out);
-		} else if (attr[j] >= 30 && attr[j] < 40) {
+        } else if (attr[j] == 2) {
+            fputs("text-decoration: underline;", out);
+        } else if (attr[j] == 5 || attr[j] == 6) {
+            fputs("text-decoration: blink;", out);
+        } else if (attr[j] >= 30 && attr[j] < 40) {
 			fputs("color:", out);
 			put_color(out, attr[j]%10);
 		} else if (attr[j] >= 40 && attr[j] < 50) {
