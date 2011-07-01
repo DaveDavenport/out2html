@@ -184,29 +184,25 @@ int main (int argc, char **argv)
 			/* reset */
 			num_attr = 0;
 			attributes[num_attr] = 0;
-			continue;
 		}
 		/* if we are in attribute parsing mode, parse attribute */
-		if(state == PARSE_ATTRIBUTE) {
+		else if(state == PARSE_ATTRIBUTE) {
 			if(in == '[') {
 				/* Begin of attributes */
 				state = PARSE_COLOR_ATTRIBUTE;
-				continue;
+			}else {
+				WARNING("Unknown Escape sequence found: %i\n", in);
+				state = PARSE_NORMAL;
 			}
-			WARNING("Unknown Escape sequence found: %i\n", in);
-			state = PARSE_NORMAL;
-			continue;
 		} else if(state == PARSE_COLOR_ATTRIBUTE) {
 			if (in == ';') { /* End of element */
 				attributes[++num_attr] = 0;
 				EXCEPTION(num_attr >= MAX_ATTR, "Max number of supported attributes reached (%i)\n", MAX_ATTR);
 			} else if(in == 'm') { /* end of attribute */
 				num_attr++;
-				EXCEPTION(num_attr >= MAX_ATTR, "Max number of supported attributes reached (%i)\n", MAX_ATTR);
 				process_color(output, attributes, num_attr);
 				state = PARSE_NORMAL;
-			} else if(in >= '0' && in <= '9')
-			{
+			} else if(in >= '0' && in <= '9') {
 				attributes[num_attr] *= 10;
 				attributes[num_attr] += in-'0';
 			}else if (in == 'h' || in == 'l' ) {
@@ -229,9 +225,13 @@ int main (int argc, char **argv)
 		}
 	}
 	EXCEPTION(error != NULL, "Failed to read input character: %s\n", error->message);
-	if(init)
+	if(init) {
+		/* Close open tags */
+		attributes[0] = 0; num_attr = 1;
+		process_color(output, attributes, num_attr);
 		fprintf(output,"\n  </pre>\n");
-	print_page_footer(output);
+		print_page_footer(output);
+	}
 
 	/* free input channel */
 	g_io_channel_unref(chan);
