@@ -75,9 +75,11 @@ void process_color(FILE *out, int *attr, int num_attr)
 	static int divs = 0;
 
 	/* On explicit close, close it */
-	if(num_attr == 1 && attr[0] == 0 && divs > 0) {
-		fputs("</span>", out);
-		divs--;
+	if(num_attr == 1 && attr[0] == 0) {
+		if(divs > 0) {
+			fputs("</span>", out);
+			divs--;
+		}
 		return;
 	}
 
