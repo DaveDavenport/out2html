@@ -69,40 +69,41 @@ static void put_color(FILE *out, int v)
 	fputs(colors[v],out);
 }
 
-void process_color(FILE *out, int *attr, int num_attr)
+void process_color(FILE *out, int attr)
 {
-	/* Count the depth of the divs */
-	static int divs = 0;
-
-	/* On explicit close, close it */
-	if(num_attr == 1 && attr[0] == 0) {
-		while(divs > 0) {
-			fputs("</span>", out);
-			divs--;
-		}
-		return;
-	}
-
-	/* If we are going to set color, and there is still one open, close it */
+    /* Count the depth of the divs */
+    static int divs = 0;
+    /* If we are going to set color, and there is still one open, close it */
+    if(attr == 0) {
+        while(divs) {
+            fputs("</span>", out);
+            divs--;
+        }
+        return;
+    } else if(attr == 1) {
+        fputs("<span style='font-weight:bold'>", out);
+    } else if(attr == 2) {
+        fputs("<span style='font-weight:lighter'>", out);
+    } else if (attr == 3) {
+        fputs("<span style='font-style:italic;'>", out);
+    } else if (attr == 4) {
+        fputs("<span style='text-decoration: underline;'>", out);
+    } else if (attr == 5 || attr == 6) {
+        fputs("<span style='text-decoration: blink;'>", out);
+    } else if (attr == 9) {
+        fputs("<span style='text-decoration: line-through;'>", out);
+    } else if (attr >= 30 && attr < 40) {
+        fputs("<span style='color:", out);
+        put_color(out, attr%10);
+        fputs("'>", out);
+    } else if (attr >= 40 && attr < 50) {
+        fputs("<span style='background-color:", out);
+        put_color(out, attr%10);
+        fputs("'>", out);
+    }else {
+        return;
+    }
     divs++;
-    fputs("<span style='", out);
-	for(int j=0; j<num_attr; j++) {
-		if(attr[j] == 1) {
-			fputs("font-weight:bold", out);
-        } else if (attr[j] == 2) {
-            fputs("text-decoration: underline;", out);
-        } else if (attr[j] == 5 || attr[j] == 6) {
-            fputs("text-decoration: blink;", out);
-        } else if (attr[j] >= 30 && attr[j] < 40) {
-			fputs("color:", out);
-			put_color(out, attr[j]%10);
-		} else if (attr[j] >= 40 && attr[j] < 50) {
-			fputs("background-color:", out);
-			put_color(out, attr[j]%10);
-		}
-		fputs(";", out);
-	}
-	fputs("'>", out);
 }
 
 /** Print the header of the html page */
@@ -137,8 +138,7 @@ int main (int argc, char **argv)
 	gunichar in;
 	gboolean init = FALSE;
 	/* used to parse attribute */
-	gint attributes[MAX_ATTR];
-	gint num_attr = 0;
+	gint attributes = 0;
 	/* Input/output */
 	FILE *input = stdin;
 	FILE  *output = stdout;
@@ -185,8 +185,7 @@ int main (int argc, char **argv)
 		if(in == ESCAPE_CHAR) {
 			state = PARSE_ATTRIBUTE;
 			/* reset */
-			num_attr = 0;
-			attributes[num_attr] = 0;
+			attributes = 0;
 		}
 		/* if we are in attribute parsing mode, parse attribute */
 		else if(state == PARSE_ATTRIBUTE) {
@@ -199,15 +198,14 @@ int main (int argc, char **argv)
 			}
 		} else if(state == PARSE_COLOR_ATTRIBUTE) {
 			if (in == ';') { /* End of element */
-				attributes[++num_attr] = 0;
-				EXCEPTION(num_attr >= MAX_ATTR, "Max number of supported attributes reached (%i)\n", MAX_ATTR);
+				process_color(output, attributes);
+				attributes = 0;
 			} else if(in == 'm') { /* end of attribute */
-				num_attr++;
-				process_color(output, attributes, num_attr);
+				process_color(output, attributes);
 				state = PARSE_NORMAL;
 			} else if(in >= '0' && in <= '9') {
-				attributes[num_attr] *= 10;
-				attributes[num_attr] += in-'0';
+				attributes *= 10;
+				attributes += in-'0';
 			}else if (in == 'h' || in == 'l' ) {
 				WARNING("Unsupported attribute found: %i\n", in);
 				state = PARSE_NORMAL;
@@ -230,8 +228,7 @@ int main (int argc, char **argv)
 	EXCEPTION(error != NULL, "Failed to read input character: %s\n", error->message);
 	if(init) {
 		/* Close open tags */
-		attributes[0] = 0; num_attr = 1;
-		process_color(output, attributes, num_attr);
+		process_color(output, 0);
 		fprintf(output,"\n  </pre>\n");
 		print_page_footer(output);
 	}
