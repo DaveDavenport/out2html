@@ -34,7 +34,7 @@ const int MAX_ATTR = 32;
 const int ESCAPE_CHAR = 27;
 /** BASH color to html color table  */
 const int NUM_COLORS = 8;
-const char *colors[] = {"black", "red",	"green", "#FFBB00", "blue", "magenta", "cyan", "white" };
+const char *colors[] = {"black", "red",	"green", "#CDCD00", "blue", "magenta", "cyan", "white" };
 
 /** Parse CMD options  */
 /* input/output file */
