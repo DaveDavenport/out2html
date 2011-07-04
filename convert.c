@@ -61,7 +61,7 @@ static void parse_cmd_options(int *argc, char ***argv)
 	EXCEPTION(error != NULL, "Failed to parse commandline options: %s\n", error->message);
 }
 
-void process_color(FILE *out, int attr)
+void process_attribute(FILE *out, int attr)
 {
     /* Count the depth of the divs */
     static int divs = 0;
@@ -187,10 +187,10 @@ int main (int argc, char **argv)
 			}
 		} else if(state == PARSE_COLOR_ATTRIBUTE) {
 			if (in == ';') { /* End of element */
-				process_color(output, attributes);
+				process_attribute(output, attributes);
 				attributes = 0;
 			} else if(in == 'm') { /* end of attribute */
-				process_color(output, attributes);
+				process_attribute(output, attributes);
 				state = PARSE_NORMAL;
 			} else if(in >= '0' && in <= '9') {
 				attributes *= 10;
@@ -217,7 +217,7 @@ int main (int argc, char **argv)
 	EXCEPTION(error != NULL, "Failed to read input character: %s\n", error->message);
 	if(init) {
 		/* Close open tags */
-		process_color(output, 0);
+		process_attribute(output, 0);
 		fprintf(output,"\n  </pre>\n");
 		print_page_footer(output);
 	}
