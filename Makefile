@@ -1,4 +1,4 @@
-PROGRAM	=	ascii2html
+PROGRAM	=	out2html
 VERSION	=	0.0.1
 AUTHOR	=	Qball Cow
 COPYRIGHT=	2011-2011

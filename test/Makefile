@@ -1,4 +1,4 @@
-APP_DEP=../ascii2html
+APP_DEP=../out2html
 # The scripts to test.
 SCRIPTS=$(wildcard *.sh)
 SCRIPTS_OUTPUT=$(SCRIPTS:%.sh=%.out)

@@ -23,4 +23,4 @@ do FG=${FGs// /}
     done
     echo -en "\n">> /tmp/colortest;
 done
-../ascii2html -i /tmp/colortest
+../out2html -i /tmp/colortest

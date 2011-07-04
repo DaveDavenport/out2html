@@ -1,4 +1,4 @@
-/* ASCII2HTML
+/* OUT2HTML
  * Copyright (C) 2011 Qball Cow <qball@gmpclient.org>
  *
  * This program is free software; you can redistribute it and/or modify

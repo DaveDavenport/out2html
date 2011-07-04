@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "test" | ../ascii2html
+echo "test" | ../out2html
