@@ -1,5 +1,5 @@
 PROGRAM	=	out2html
-VERSION	=	0.0.1
+VERSION	=	11.7
 AUTHOR	=	Qball Cow
 COPYRIGHT=	2011-2011
 MAIL=		qball@gmpclient.org
