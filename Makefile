@@ -10,6 +10,8 @@ DIST=		Makefile\
 			COPYING\
 			README
 
+MANPAGE=	out2html.1
+
 PREFIX?=	~/.local/
 PKG_CONFIG= 	glib-2.0 gobject-2.0
 
@@ -59,7 +61,14 @@ clean:
 install: $(PROGRAM)
 	$(call print,"$(BOLD)Installing:$(RESET)\\t\\t$^ to $(PREFIX)/bin/")
 	$(QUIET)install $(PROGRAM) $(PREFIX)"/bin/"
+	$(QUIET)mkdir -p $(PREFIX)"/man/man1/"
+	$(call print,"$(BOLD)Installing:$(RESET)\\t\\t$(MANPAGE) to $(PREFIX)/man/man1/")
+	$(QUIET)install $(MANPAGE) $(PREFIX)"/man/man1/$(MANPAGE)"
 
+uninstall:
+	$(call print,"$(BOLD)Uninstalling:$(RESET)\\t\\t$(PROGRAM) $(MANPAGE)")
+	$(QUIET)rm -f $(PREFIX)/bin/"$(PROGRAM)"
+	$(QUIET)rm -f $(PREFIX)/man/man1/"$(MANPAGE)"
 
 
 dist: $(DIST_FILE)
