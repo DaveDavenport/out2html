@@ -13,11 +13,11 @@ DIST=		Makefile\
 MANPAGE=	out2html.1
 
 PREFIX?=	~/.local/
-PKG_CONFIG= 	glib-2.0 gobject-2.0
+PKG_CONFIG= 	glib-2.0 gobject-2.0 gio-2.0
 
 CFLAGS=		-Wall -Werror -O3
 LIBS=
-QUIET=		@
+QUIET=		
 
 #DO NOT EDIT BELOW THIS LINE
 MAKEFLAGS	= --no-print-directory
@@ -51,7 +51,7 @@ all: $(PROGRAM)
 
 $(PROGRAM): $(SOURCE) | $(DIST)
 	$(call print,"$(BOLD)Compile:$(RESET)\\t\\t$^ into $(PROGRAM)")
-	$(QUIET)$(CC) $(LIBS) $(CFLAGS) -o $@ $^
+	$(QUIET)$(CC) $(CFLAGS) -o $@ $^ $(LIBS) 
 
 clean:
 	$(call print,"$(BOLD)Clean source directory$(RESET)")
