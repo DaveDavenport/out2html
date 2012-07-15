@@ -15,7 +15,7 @@ MANPAGE=	out2html.1
 PREFIX?=	~/.local/
 PKG_CONFIG= 	glib-2.0 gobject-2.0 gio-2.0
 
-CFLAGS=		-Wall -Werror -O3
+CFLAGS=		-Wall -O3
 LIBS=
 QUIET=		
 
@@ -78,4 +78,4 @@ $(DIST_FILE): $(DIST) $(SOURCE)
 
 .PHONY: test
 test: $(PROGRAM)
-	@$(MAKE) -C test/ 
+	@$(MAKE) -C test/
