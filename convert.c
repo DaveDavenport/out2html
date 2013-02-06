@@ -18,12 +18,21 @@
 #include <locale.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 /* GLIB stuff */
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gstdio.h>
 
 #include "colors.h"
+
+typedef enum {
+    AC_FIVE,
+    AC_SEPARATOR,
+    AC_COLOR
+} advanced_color;
+
+
 /* Error throwing */
 #define EXCEPTION(test,a, ...) if((test)){fflush(NULL);fprintf(stderr,"\nERROR: " a, __VA_ARGS__); exit(1);}
 #define WARNING(a, ...) fprintf(stderr,"\nWARNING: " a, __VA_ARGS__);
@@ -59,7 +68,7 @@ static void parse_cmd_options(int *argc, char ***argv)
 	EXCEPTION(error != NULL, "Failed to parse commandline options: %s\n", error->message);
 }
 
-void process_attribute(FILE *out, int attr)
+bool process_attribute(FILE *out, GIOChannel *chan, GError *error, int attr)
 {
     /* Count the depth of the divs */
     static int divs = 0;
@@ -68,7 +77,7 @@ void process_attribute(FILE *out, int attr)
 	for(;divs;divs--) {
             fputs("</span>", out);
         }
-        return;
+        return false ;
     } else if(attr == 1) {
         fputs("<span style='font-weight:bold'>", out);
     } else if(attr == 2) {
@@ -81,16 +90,43 @@ void process_attribute(FILE *out, int attr)
         fputs("<span style='text-decoration: blink;'>", out);
     } else if (attr == 9) {
         fputs("<span style='text-decoration: line-through;'>", out);
-    } else if (attr >= 30 && attr < 40) {
-	EXCEPTION((attr%10)<0 || (attr%10)>= NUM_COLORS, "Unknown color code: %i\n", attr%10);
-	fprintf(out, "<span style='color:%s'>", colors[attr%10]);
-    } else if (attr >= 40 && attr < 50) {
-	EXCEPTION((attr%10)<0 || (attr%10)>= NUM_COLORS, "Unknown color code: %i\n", attr%10);
-	fprintf(out, "<span style='background-color:%s'>", colors[attr%10]);
+    } else if (attr >= 30 && attr < 38) {
+        fprintf(out, "<span style='color:%s'>", colors[attr%10]);
+    } else if (attr >= 40 && attr < 48) {
+        fprintf(out, "<span style='background-color:%s'>", colors[attr%10]);
+    } else if (attr  == 38  || attr == 48) {
+        // TODO: This is a dirty hack to get the 'advanced' color parsing.
+        // This seems to break the normal way of parsing attributes.
+        // Format is \033[38;5;<color>
+        gunichar in;
+        advanced_color state = AC_FIVE;
+        int color = 0;
+        // Special color code parsing.
+        while(g_io_channel_read_unichar(chan, &in, &error) == G_IO_STATUS_NORMAL && error == NULL)
+        {
+            if(state == AC_FIVE && in == '5') state = AC_SEPARATOR;
+            else if (state == AC_SEPARATOR && in == ';') state = AC_COLOR;
+            else if (state == AC_COLOR) {
+                if(in == ';' || in == 'm'){ 
+                    EXCEPTION(( color >= NUM_COLORS ), "Invalid color code element: %d\n", color);
+                    fprintf(out, "<span style='%scolor:%s'>",
+                            (attr == 38)?"":"background-", colors[color]);
+                    divs++;
+                    return (in == 'm');
+                }
+                EXCEPTION((in < '0' || in > '9' ), "Invalid color code element: %d\n", in);
+                color*=10;
+                color+= (in-'0');
+            }else{
+                EXCEPTION(1, "Invalid 256 color code: %d\n", in);
+            }
+        }
+
     }else {
-        return;
+        return false;
     }
     divs++;
+    return false;
 }
 
 /** Print the header of the html page */
@@ -159,7 +195,7 @@ int main (int argc, char **argv)
 	EXCEPTION(error != NULL, "Failed to set input encoding: %s\n", error->message);
 
 	/* Read input */
-	while(g_io_channel_read_unichar(chan, &in, &error) == G_IO_STATUS_NORMAL && error == NULL)
+	while(error == NULL && g_io_channel_read_unichar(chan, &in, &error) == G_IO_STATUS_NORMAL && error == NULL)
 	{
 		if(!init) {
 			/* Output html header */
@@ -185,10 +221,12 @@ int main (int argc, char **argv)
 			}
 		} else if(state == PARSE_COLOR_ATTRIBUTE) {
 			if (in == ';') { /* End of element */
-				process_attribute(output, attributes);
-				attributes = 0;
+				if(process_attribute(output,chan,error, attributes))
+                    state = PARSE_NORMAL;
+                else
+                    attributes = 0;
 			} else if(in == 'm') { /* end of attribute */
-				process_attribute(output, attributes);
+				process_attribute(output,chan, error, attributes);
 				state = PARSE_NORMAL;
 			} else if(in >= '0' && in <= '9') {
 				attributes *= 10;
@@ -215,7 +253,7 @@ int main (int argc, char **argv)
 	EXCEPTION(error != NULL, "Failed to read input character: %s\n", error->message);
 	if(init) {
 		/* Close open tags */
-		process_attribute(output, 0);
+		process_attribute(output,NULL, NULL, 0);
 		fprintf(output,"\n  </pre>\n");
 		print_page_footer(output);
 	}
