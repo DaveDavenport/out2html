@@ -1,5 +1,15 @@
 #include "colors.h" 
 
+const char bright_colors[8][8] = {
+    "#555555", // Darkgrey
+    "#FF5555", // Red
+    "#55FF55", // Green
+    "#FFFF55", // Yellow
+    "#5555FF", // Blue
+    "#FF55FF", // Megenta
+    "#55FFFF", //Cyan
+    "#FFFFFF", //White
+};
 const char colors[NUM_COLORS][8] = 
 {
     "#000000",

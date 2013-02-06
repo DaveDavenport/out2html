@@ -94,6 +94,10 @@ bool process_attribute(FILE *out, GIOChannel *chan, GError *error, int attr)
         fprintf(out, "<span style='color:%s'>", colors[attr%10]);
     } else if (attr >= 40 && attr < 48) {
         fprintf(out, "<span style='background-color:%s'>", colors[attr%10]);
+    } else if (attr >= 90 && attr < 98) {
+        fprintf(out, "<span style='color:%s'>", bright_colors[attr%10]);
+    } else if (attr >= 100 && attr < 108) {
+        fprintf(out, "<span style='background-color:%s'>", bright_colors[attr%10]);
     } else if (attr  == 38  || attr == 48) {
         // TODO: This is a dirty hack to get the 'advanced' color parsing.
         // This seems to break the normal way of parsing attributes.
