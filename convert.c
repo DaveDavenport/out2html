@@ -23,6 +23,7 @@
 #include <glib-object.h>
 #include <glib/gstdio.h>
 
+#include "colors.h"
 /* Error throwing */
 #define EXCEPTION(test,a, ...) if((test)){fflush(NULL);fprintf(stderr,"\nERROR: " a, __VA_ARGS__); exit(1);}
 #define WARNING(a, ...) fprintf(stderr,"\nWARNING: " a, __VA_ARGS__);
@@ -31,9 +32,6 @@
 const int MAX_ATTR = 32;
 /** ESCAPE_CHAR: the escape id used by bash. */
 const int ESCAPE_CHAR = 27;
-/** BASH color to html color table  */
-const int NUM_COLORS = 8;
-const char *colors[] = {"black", "red",	"green", "#CDCD00", "blue", "magenta", "cyan", "white" };
 
 /** Parse CMD options  */
 /* input/output file */

@@ -4,7 +4,7 @@ AUTHOR	=	Qball Cow
 COPYRIGHT=	2011-2011
 MAIL=		qball@gmpclient.org
 
-SOURCE=		convert.c
+SOURCE=		convert.c colors.c colors.h
 
 DIST=		Makefile\
 			COPYING\
@@ -15,7 +15,7 @@ MANPAGE=	out2html.1
 PREFIX?=	~/.local/
 PKG_CONFIG= 	glib-2.0 gobject-2.0 gio-2.0
 
-CFLAGS=		-Wall -O3
+CFLAGS=		-Wall -O3 -std=c99
 LIBS=
 QUIET=		
 
