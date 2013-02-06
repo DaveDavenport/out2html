@@ -36,7 +36,6 @@ endef
 
 define compare
 @{																		\
-local err cmd start;													\
 cmd="diff $(1) $(2)";													\
 start="'$(1)'-'$(2)'";						\
 out=$$($${cmd} 2>&1);													\
