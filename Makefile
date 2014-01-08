@@ -1,7 +1,7 @@
 PROGRAM	=	out2html
 VERSION	=	11.7
 AUTHOR	=	Qball Cow
-COPYRIGHT=	2011-2011
+COPYRIGHT=	2011-2014
 MAIL=		qball@gmpclient.org
 
 SOURCE=		convert.c colors.c colors.h

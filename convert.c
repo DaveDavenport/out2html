@@ -1,5 +1,5 @@
 /* OUT2HTML
- * Copyright (C) 2011 Qball Cow <qball@gmpclient.org>
+ * Copyright (C) 2011-2014 Qball Cow <qball@gmpclient.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,7 +173,9 @@ int main (int argc, char **argv)
 	GError *error = NULL;
 
 	/* init the glib system  */
+#if ! GLIB_CHECK_VERSION(2,36,0)
 	g_type_init();
+#endif
 	/* needed to get the right charset from g_get_charset */
 	setlocale(LC_ALL, "");
 	/* Get charset */
