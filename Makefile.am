@@ -24,6 +24,6 @@ out2html_SOURCES=\
 # Indent
 ##
 
-indent: ${out2html_SOURCES} ${top_srcdir}/config/config.def.c
+indent: ${out2html_SOURCES}
 	uncrustify -c ${top_srcdir}/data/uncrustify.cfg --replace $^
 

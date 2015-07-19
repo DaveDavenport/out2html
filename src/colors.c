@@ -1,4 +1,4 @@
-#include "colors.h" 
+#include "colors.h"
 
 const char bright_colors[8][8] = {
     "#555555", // Darkgrey
@@ -10,7 +10,7 @@ const char bright_colors[8][8] = {
     "#55FFFF", //Cyan
     "#FFFFFF", //White
 };
-const char colors[NUM_COLORS][8] = 
+const char colors[NUM_COLORS][8] =
 {
     "#000000",
     "#800000",
