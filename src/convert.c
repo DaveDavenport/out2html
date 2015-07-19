@@ -19,6 +19,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <config.h>
 /* GLIB stuff */
 #include <glib.h>
 #include <glib-object.h>
@@ -68,7 +69,7 @@ static void parse_cmd_options(int *argc, char ***argv)
 	EXCEPTION(error != NULL, "Failed to parse commandline options: %s\n", error->message);
 }
 
-bool process_attribute(FILE *out, GIOChannel *chan, GError *error, int attr)
+static bool process_attribute(FILE *out, GIOChannel *chan, GError *error, int attr)
 {
     /* Count the depth of the divs */
     static int divs = 0;
