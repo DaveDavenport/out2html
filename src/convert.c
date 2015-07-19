@@ -251,7 +251,7 @@ int main (int argc, char **argv)
 			else if(in == '<') fputs("&lt;", output);
 			else if(in == '>') fputs("&gt;", output);
 			/* ascii values stay ascii*/
-			else if(in >= 0 && in <= 177)
+			else if(in <= 177)
 				fprintf(output, "%c", (char)in);
 			/* Rest we encode in utf8 */
 			else fprintf(output, "&#%i;", in);
