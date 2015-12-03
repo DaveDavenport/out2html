@@ -1,4 +1,4 @@
-AC_INIT([out2html], [0.15.7-devel], [qball@gmpclient.org])
+AC_INIT([out2html], [0.15.12], [qball@gmpclient.org])
 
 AC_CONFIG_SRCDIR([src/convert.c])
 AC_CONFIG_HEADER([config.h])

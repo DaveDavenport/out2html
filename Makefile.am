@@ -20,6 +20,11 @@ out2html_SOURCES=\
 	src/convert.c\
 	include/colors.h
 
+man1_MANS=\
+   out2html.1
+
+EXTRA_DIST=\
+   $(man1_MANS)
 ##
 # Indent
 ##
