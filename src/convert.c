@@ -50,11 +50,13 @@ const gchar        *input_file    = NULL;
 const gchar        *output_file   = NULL;
 const gchar        *input_charset = NULL;
 const gchar        *title         = PACKAGE;
+gboolean           pango_markup   = TRUE;
 const GOptionEntry entries[]      = {
-    { "input",   'i', 0, G_OPTION_ARG_FILENAME, &input_file,    "Input file (default stdin)",      NULL },
-    { "output",  'o', 0, G_OPTION_ARG_FILENAME, &output_file,   "Output file (default stdout)",    NULL },
-    { "charset", 'c', 0, G_OPTION_ARG_STRING,   &input_charset, "Set the charset of the input",    NULL },
-    { "title",   't', 0, G_OPTION_ARG_STRING,   &title,         "Set the title off the HTML file", NULL },
+    { "input",        'i', 0, G_OPTION_ARG_FILENAME, &input_file,    "Input file (default stdin)",      NULL },
+    { "output",       'o', 0, G_OPTION_ARG_FILENAME, &output_file,   "Output file (default stdout)",    NULL },
+    { "charset",      'c', 0, G_OPTION_ARG_STRING,   &input_charset, "Set the charset of the input",    NULL },
+    { "title",        't', 0, G_OPTION_ARG_STRING,   &title,         "Set the title off the HTML file", NULL },
+    { "pango-markup", 'p', 0, G_OPTION_ARG_NONE,     &pango_markup,  "Pango markup",                    NULL },
     { NULL }
 };
 /* Option Parser */
@@ -70,6 +72,21 @@ static void parse_cmd_options ( int *argc, char ***argv )
     EXCEPTION ( error != NULL, "Failed to parse commandline options: %s\n", error->message );
 }
 
+const char *attributes[12][2] = {
+    { "",                                              ""                           },
+/*1*/   { "<span style='font-weight:bold'>",               "<span font_weight='bold'>"  },
+/*2*/   { "<span style='font-weight:lighter'>",            "font_weight='light'"        },
+/*3*/   { "<span style='font-weight:italic'>",             "<span style='italic'>"      },
+/*4*/   { "<span style='text-decoration: underline;'>",    "<span underline='single'>"  },
+/*5*/   { "<span style='text-decoration: blink;'>",        "<span>"                     },
+/*6*/   { "<span style='text-decoration: blink;'>",        "<span>"                     },
+/*7*/   { "<span>",                                        "<span>"                     },
+/*8*/   { "<span>",                                        "<span>"                     },
+/*9*/   { "<span style='text-decoration: line-through;'>", "<span strikethrough='true'" },
+/*10*/  { "<span style='color:%s'>",                       "<span color='%s'>"          },
+/* 11*/ { "<span style='background-color:%s'>",            "<span background='%s'>"     }
+};
+
 static bool process_attribute ( FILE *out, GIOChannel *chan, GError *error, int attr )
 {
     /* Count the depth of the divs */
@@ -81,35 +98,20 @@ static bool process_attribute ( FILE *out, GIOChannel *chan, GError *error, int 
         }
         return false;
     }
-    else if ( attr == 1 ) {
-        fputs ( "<span style='font-weight:bold'>", out );
-    }
-    else if ( attr == 2 ) {
-        fputs ( "<span style='font-weight:lighter'>", out );
-    }
-    else if ( attr == 3 ) {
-        fputs ( "<span style='font-style:italic;'>", out );
-    }
-    else if ( attr == 4 ) {
-        fputs ( "<span style='text-decoration: underline;'>", out );
-    }
-    else if ( attr == 5 || attr == 6 ) {
-        fputs ( "<span style='text-decoration: blink;'>", out );
-    }
-    else if ( attr == 9 ) {
-        fputs ( "<span style='text-decoration: line-through;'>", out );
+    else if ( attr > 0 && attr < 10 ) {
+        fputs ( attributes[attr][pango_markup], out );
     }
     else if ( attr >= 30 && attr < 38 ) {
-        fprintf ( out, "<span style='color:%s'>", colors[attr % 10] );
+        fprintf ( out, attributes[10][pango_markup], colors[attr % 10] );
     }
     else if ( attr >= 40 && attr < 48 ) {
-        fprintf ( out, "<span style='background-color:%s'>", colors[attr % 10] );
+        fprintf ( out, attributes[11][pango_markup], colors[attr % 10] );
     }
     else if ( attr >= 90 && attr < 98 ) {
-        fprintf ( out, "<span style='color:%s'>", bright_colors[attr % 10] );
+        fprintf ( out, attributes[10][pango_markup], bright_colors[attr % 10] );
     }
     else if ( attr >= 100 && attr < 108 ) {
-        fprintf ( out, "<span style='background-color:%s'>", bright_colors[attr % 10] );
+        fprintf ( out, attributes[11][pango_markup], bright_colors[attr % 10] );
     }
     else if ( attr == 38 || attr == 48 ) {
         // TODO: This is a dirty hack to get the 'advanced' color parsing.
@@ -129,8 +131,12 @@ static bool process_attribute ( FILE *out, GIOChannel *chan, GError *error, int 
             else if ( state == AC_COLOR ) {
                 if ( in == ';' || in == 'm' ) {
                     EXCEPTION ( ( color >= NUM_COLORS ), "Invalid color code element: %d\n", color );
-                    fprintf ( out, "<span style='%scolor:%s'>",
-                              ( attr == 38 ) ? "" : "background-", colors[color] );
+                    if ( attr == 38 ) {
+                        fprintf ( out, attributes[11][pango_markup], colors[color] );
+                    }
+                    else {
+                        fprintf ( out, attributes[10][pango_markup], colors[color] );
+                    }
                     divs++;
                     return in == 'm';
                 }
@@ -144,6 +150,7 @@ static bool process_attribute ( FILE *out, GIOChannel *chan, GError *error, int 
         }
     }
     else {
+        fprintf ( stderr, "Invalid\n" );
         return false;
     }
     divs++;
@@ -222,9 +229,11 @@ int main ( int argc, char **argv )
     while ( error == NULL && g_io_channel_read_unichar ( chan, &in, &error ) == G_IO_STATUS_NORMAL && error == NULL ) {
         if ( !init ) {
             /* Output html header */
-            print_page_header ( output );
-            /* Convert and print body */
-            fprintf ( output, "<pre style='font-family:monospace'>\n" );
+            if ( !pango_markup ) {
+                print_page_header ( output );
+                /* Convert and print body */
+                fprintf ( output, "<pre style='font-family:monospace'>\n" );
+            }
             init = TRUE;
         }
         /* If we hit the escape character, go into 'attribute parsing' mode */
@@ -289,15 +298,19 @@ int main ( int argc, char **argv )
                 fprintf ( output, "%c", (char) in );
             }
             /* Rest we encode in utf8 */
-            else{ fprintf ( output, "&#%i;", in ); }
+            else{
+                fprintf ( output, "&#%i;", in );
+            }
         }
     }
     EXCEPTION ( error != NULL, "Failed to read input character: %s\n", error->message );
     if ( init ) {
         /* Close open tags */
         process_attribute ( output, NULL, NULL, 0 );
-        fprintf ( output, "\n  </pre>\n" );
-        print_page_footer ( output );
+        if ( !pango_markup ) {
+            fprintf ( output, "\n  </pre>\n" );
+            print_page_footer ( output );
+        }
     }
 
     /* free input channel */
