@@ -51,12 +51,14 @@ const gchar        *output_file   = NULL;
 const gchar        *input_charset = NULL;
 const gchar        *title         = PACKAGE;
 gboolean           pango_markup   = TRUE;
+gboolean           strip_markup   = FALSE;
 const GOptionEntry entries[]      = {
     { "input",        'i', 0, G_OPTION_ARG_FILENAME, &input_file,    "Input file (default stdin)",      NULL },
     { "output",       'o', 0, G_OPTION_ARG_FILENAME, &output_file,   "Output file (default stdout)",    NULL },
     { "charset",      'c', 0, G_OPTION_ARG_STRING,   &input_charset, "Set the charset of the input",    NULL },
     { "title",        't', 0, G_OPTION_ARG_STRING,   &title,         "Set the title off the HTML file", NULL },
     { "pango-markup", 'p', 0, G_OPTION_ARG_NONE,     &pango_markup,  "Pango markup",                    NULL },
+    { "strip",        's', 0, G_OPTION_ARG_NONE,     &strip_markup,  "Strip markup",                    NULL },
     { NULL }
 };
 /* Option Parser */
@@ -89,6 +91,9 @@ const char *attributes[12][2] = {
 
 static bool process_attribute ( FILE *out, GIOChannel *chan, GError *error, int attr )
 {
+    if ( strip_markup ) {
+        return FALSE;
+    }
     /* Count the depth of the divs */
     static int divs = 0;
     /* If we are going to set color, and there is still one open, close it */
