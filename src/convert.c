@@ -50,7 +50,7 @@ const gchar        *input_file    = NULL;
 const gchar        *output_file   = NULL;
 const gchar        *input_charset = NULL;
 const gchar        *title         = PACKAGE;
-gboolean           pango_markup   = TRUE;
+gboolean           pango_markup   = FALSE;
 gboolean           strip_markup   = FALSE;
 const GOptionEntry entries[]      = {
     { "input",        'i', 0, G_OPTION_ARG_FILENAME, &input_file,    "Input file (default stdin)",      NULL },
@@ -77,14 +77,14 @@ static void parse_cmd_options ( int *argc, char ***argv )
 const char *attributes[12][2] = {
     { "",                                              ""                           },
 /*1*/   { "<span style='font-weight:bold'>",               "<span font_weight='bold'>"  },
-/*2*/   { "<span style='font-weight:lighter'>",            "font_weight='light'"        },
+/*2*/   { "<span style='font-weight:lighter'>",            "<span font_weight='light'>"        },
 /*3*/   { "<span style='font-weight:italic'>",             "<span style='italic'>"      },
 /*4*/   { "<span style='text-decoration: underline;'>",    "<span underline='single'>"  },
 /*5*/   { "<span style='text-decoration: blink;'>",        "<span>"                     },
 /*6*/   { "<span style='text-decoration: blink;'>",        "<span>"                     },
 /*7*/   { "<span>",                                        "<span>"                     },
 /*8*/   { "<span>",                                        "<span>"                     },
-/*9*/   { "<span style='text-decoration: line-through;'>", "<span strikethrough='true'" },
+/*9*/   { "<span style='text-decoration: line-through;'>", "<span strikethrough='true'>" },
 /*10*/  { "<span style='color:%s'>",                       "<span color='%s'>"          },
 /* 11*/ { "<span style='background-color:%s'>",            "<span background='%s'>"     }
 };
