@@ -50,6 +50,7 @@ const gchar        *input_file    = NULL;
 const gchar        *output_file   = NULL;
 const gchar        *input_charset = NULL;
 const gchar        *title         = PACKAGE;
+gboolean           black_bg       = FALSE;
 gboolean           pango_markup   = FALSE;
 gboolean           strip_markup   = FALSE;
 const GOptionEntry entries[]      = {
@@ -57,6 +58,7 @@ const GOptionEntry entries[]      = {
     { "output",       'o', 0, G_OPTION_ARG_FILENAME, &output_file,   "Output file (default stdout)",    NULL },
     { "charset",      'c', 0, G_OPTION_ARG_STRING,   &input_charset, "Set the charset of the input",    NULL },
     { "title",        't', 0, G_OPTION_ARG_STRING,   &title,         "Set the title off the HTML file", NULL },
+    { "black-bg",     'b', 0, G_OPTION_ARG_NONE,     &black_bg,      "Set color to black on white.",    NULL },
     { "pango-markup", 'p', 0, G_OPTION_ARG_NONE,     &pango_markup,  "Pango markup",                    NULL },
     { "strip",        's', 0, G_OPTION_ARG_NONE,     &strip_markup,  "Strip markup",                    NULL },
     { NULL }
@@ -163,12 +165,15 @@ static bool process_attribute ( FILE *out, GIOChannel *chan, GError *error, int 
 }
 
 /** Print the header of the html page */
-static void print_page_header ( FILE *out )
+static void print_page_header ( FILE *out, gboolean black_bg )
 {
     fprintf ( out, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n \"http://www.w3.org/TR/html4/strict.dtd\">\n" );
     fprintf ( out, "<html>\n <head>\n" );
     fprintf ( out, "  <title>%s</title>\n", title );
     fprintf ( out, "  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\n" );
+    if ( black_bg ) {
+        fprintf ( out, "  <style>html { background: %s; color: %s; }</style>\n", colors[0], colors[7] );
+    }
     fprintf ( out, " </head>\n <body>\n" );
 }
 
@@ -235,7 +240,7 @@ int main ( int argc, char **argv )
         if ( !init ) {
             /* Output html header */
             if ( !pango_markup ) {
-                print_page_header ( output );
+                print_page_header ( output, black_bg );
                 /* Convert and print body */
                 fprintf ( output, "<pre style='font-family:monospace'>\n" );
             }
