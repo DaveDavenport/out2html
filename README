@@ -1,11 +1,20 @@
 == Building:
+
+autoreconf -i
+mkdir build
+cd build
+../configure
 make
 
 == Installing
+
 make install
 
 === Install specific path
-make install PREFIX=/usr/local/
+
+  ../configure --prefix={your prefix}
+
 
 == Creating release file
+
 make dist
